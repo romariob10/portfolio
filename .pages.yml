@@ -36,6 +36,7 @@ content:
       layout: tree
       node:
         filename: index.md
+        hideDirs: nodes
       sort: [order, title]
       default:
         sort: order
@@ -94,6 +95,8 @@ content:
       - name: code
         label: Блок кода
         type: code
+        options:
+          format: javascript
       - name: embed
         label: Видео YouTube / Rutube (полная ссылка)
         type: string
