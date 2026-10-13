@@ -1,4 +1,4 @@
-// The menu's wheel-like movement comes from Roman's video reference.
+// Desktop rotation follows Roman's video; mobile CSS replaces it with a slide.
 const animation = (name) => ({
   name,
   duration: '500ms',

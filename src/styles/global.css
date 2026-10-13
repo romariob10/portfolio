@@ -94,16 +94,20 @@ main:focus {
   padding: 26px 0;
 }
 
+/* The name and menu labels share the same typography. */
+.rail-title, .menu-link {
+  font-size: var(--menu-size);
+  font-weight: inherit;
+  letter-spacing: -.05em;
+}
+
 .rail-title {
   position: relative;
   display: block;
   margin: 0;
   width: 100%;
   height: min(32vw, 345px);
-  font-size: var(--menu-size);
   line-height: .95;
-  letter-spacing: -.05em;
-  font-weight: 100;
 }
 
 .rail-title span {
@@ -162,9 +166,7 @@ main:focus {
   align-items: center;
   gap: clamp(24px, 2.5vw, 48px);
   max-width: 100%;
-  font-size: var(--menu-size);
   line-height: .95;
-  letter-spacing: -.05em;
 }
 
 .menu-link > span:first-child {
@@ -674,15 +676,42 @@ html[data-astro-transition="back"]::view-transition-new(menu) {
   }
 }
 
-html[data-article-transition]::view-transition-old(menu) {
-  animation-name: article-fade-out;
+/* Fade the reading view in without old menu text showing through it. */
+html[data-article-transition]::view-transition-old(*) {
+  animation: none;
+  opacity: 0;
 }
 
-html[data-article-transition]::view-transition-new(menu) {
-  animation-name: article-fade-in;
+html[data-article-transition]::view-transition-new(*) {
+  animation: article-fade-in var(--motion-duration) ease-in-out both;
 }
 
 @media (max-width: 700px) {
+  /* On phones, move sideways instead of rotating around the screen corners. */
+  @keyframes menu-slide-out-left {
+    to { transform: translateX(-100%); }
+  }
+  @keyframes menu-slide-in-right {
+    from { transform: translateX(100%); }
+  }
+  @keyframes menu-slide-out-right {
+    to { transform: translateX(100%); }
+  }
+  @keyframes menu-slide-in-left {
+    from { transform: translateX(-100%); }
+  }
+  html:not([data-article-transition])::view-transition-old(menu) {
+    animation-name: menu-slide-out-left;
+  }
+  html:not([data-article-transition])::view-transition-new(menu) {
+    animation-name: menu-slide-in-right;
+  }
+  html[data-astro-transition="back"]:not([data-article-transition])::view-transition-old(menu) {
+    animation-name: menu-slide-out-right;
+  }
+  html[data-astro-transition="back"]:not([data-article-transition])::view-transition-new(menu) {
+    animation-name: menu-slide-in-left;
+  }
   :root {
     --menu-size: clamp(31px, 7.2vw, 50px);
     --page-padding: 24px;
@@ -704,7 +733,6 @@ html[data-article-transition]::view-transition-new(menu) {
     display: block;
     width: auto;
     height: auto;
-    font-size: 26px;
     line-height: 1.1;
   }
   .rail-title span, .is-root .rail-title span {

@@ -42,7 +42,7 @@ document.addEventListener('astro:before-preparation', (event) => {
 });
 
 document.addEventListener('astro:before-swap', (event) => {
-  // Reading views fade; the rotating list is reserved for menu-to-menu moves.
+  // Reading views fade; menu-to-menu moves rotate on desktop and slide on phones.
   const involvesArticle = document.querySelector('.article-page') || event.newDocument.querySelector('.article-page');
   event.newDocument.documentElement.toggleAttribute('data-article-transition', Boolean(involvesArticle));
 });
