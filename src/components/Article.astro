@@ -73,3 +73,12 @@ const links = page.id.endsWith('/contacts')
     </nav>
   </footer>
 </main>
+
+<script>
+  // Some sites block their preview image; keep the card's text and link usable.
+  document.addEventListener('error', (event) => {
+    if (event.target instanceof HTMLImageElement && event.target.classList.contains('link-preview-image')) {
+      event.target.hidden = true;
+    }
+  }, true);
+</script>

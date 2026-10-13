@@ -72,6 +72,9 @@ content:
         type: rich-text
         options:
           format: markdown
+          switcher: true
+          media: default
+          path: public/images
       - name: gallery
         label: Изображения / галерея
         type: object
