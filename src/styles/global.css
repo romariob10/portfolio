@@ -8,7 +8,7 @@
   --rail-width: clamp(80px, 8.49vw, 163px);
   --page-padding: clamp(28px, 3.333vw, 64px);
   --menu-gap: clamp(24px, 1.875vw, 36px);
-  --motion-duration: 500ms;
+  --motion-duration: 300ms;
 }
 
 * {
@@ -702,9 +702,11 @@ html[data-article-transition]::view-transition-new(*) {
   }
   html:not([data-article-transition])::view-transition-old(menu) {
     animation-name: menu-slide-out-left;
+    animation-duration: var(--motion-duration);
   }
   html:not([data-article-transition])::view-transition-new(menu) {
     animation-name: menu-slide-in-right;
+    animation-duration: var(--motion-duration);
   }
   html[data-astro-transition="back"]:not([data-article-transition])::view-transition-old(menu) {
     animation-name: menu-slide-out-right;
@@ -713,9 +715,14 @@ html[data-article-transition]::view-transition-new(*) {
     animation-name: menu-slide-in-left;
   }
   :root {
+    --motion-duration: 200ms;
     --menu-size: clamp(31px, 7.2vw, 50px);
     --page-padding: 24px;
     --menu-gap: 26px;
+  }
+  /* Capture the header and language inside the same sliding screen. */
+  .menu-screen .rail, .menu-screen .language-switch {
+    view-transition-name: none;
   }
   .menu-screen, .menu-screen.is-root {
     display: flex;
