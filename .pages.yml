@@ -33,8 +33,13 @@ content:
     view:
       primary: title
       fields: [title, kind, draft, order]
-      sort: order
-      order: asc
+      layout: tree
+      node:
+        filename: index.md
+      sort: [order, title]
+      default:
+        sort: order
+        order: asc
     fields:
       - name: title
         label: Название
