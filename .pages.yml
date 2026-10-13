@@ -1,30 +1,121 @@
+# Put this file at the root of the GitHub repository used by Pages CMS.
 media:
-  input: public
-  output: /
+  input: public/images
+  output: /images
+
 content:
-  - name: posts
-    label: Posts
-    type: collection
-    path: src/content/blog
-    view:
-      fields: [ title, draft, date ]
-    fields:
-      - { name: author, label: Author, type: string }
-      - { name: pubDatetime, label: Date, type: date }
-      - { name: modDatetime, label: Date, type: date }
-      - { name: title, label: Title, type: string, required: true }
-      - { name: ogImage, label: Title, type: string }
-      - { name: slug, label: Slug, type: string }
-      - { name: featured, label: Featured, type: boolean }
-      - { name: draft, label: Draft, type: boolean }
-      - { name: tags, label: Tags, type: string, list: true }
-      - { name: description, label: Description, type: string }
-      - { name: body, label: Body, type: rich-text }
-  - name: about
-    label: About page
+  - name: site
+    label: Имя и контакты
     type: file
-    path: src/pages/about.md
+    path: src/data/site.json
+    format: json
     fields:
-      - { name: layout, type: string, hidden: true, default: "../layouts/AboutLayout.astro" }
-      - { name: title, label: Title, type: string }
-      - { name: body, label: Body, type: rich-text, options: { input: public/assets, output: /assets } }
+      - name: name
+        label: Имя — русский
+        type: string
+        required: true
+      - name: nameEn
+        label: Имя — English
+        type: string
+        required: true
+      - name: telegram
+        label: Telegram (полная ссылка)
+        type: string
+  - name: pages
+    label: Разделы и статьи
+    type: collection
+    path: src/content/pages
+    format: yaml-frontmatter
+    subfolders: true
+    filename:
+      template: "{primary}.md"
+      field: create
+    view:
+      primary: title
+      fields: [title, kind, draft, order]
+      sort: order
+      order: asc
+    fields:
+      - name: title
+        label: Название
+        type: string
+        required: true
+      - name: kind
+        label: Тип страницы
+        type: select
+        default: article
+        options:
+          values:
+            - label: Раздел меню
+              name: section
+            - label: Статья
+              name: article
+      - name: intro
+        label: Вступление
+        type: text
+      - name: order
+        label: Порядок в меню
+        type: number
+        default: 0
+      - name: draft
+        label: Черновик
+        type: boolean
+        default: false
+      - name: body
+        label: Текст
+        type: rich-text
+        options:
+          format: markdown
+      - name: gallery
+        label: Изображения / галерея
+        type: object
+        list: true
+        fields:
+          - name: image
+            label: Изображение
+            type: image
+            required: true
+          - name: alt
+            label: Описание изображения
+            type: string
+          - name: caption
+            label: Подпись
+            type: text
+      - name: video
+        label: Видео (MP4 или WebM)
+        type: file
+        options:
+          extensions: [mp4, webm]
+      - name: code
+        label: Блок кода
+        type: code
+      - name: embed
+        label: Видео YouTube / Rutube (полная ссылка)
+        type: string
+      - name: links
+        label: Ссылки на результат
+        type: object
+        list: true
+        fields:
+          - name: label
+            label: Название ссылки
+            type: string
+            required: true
+          - name: url
+            label: Адрес (https://...)
+            type: string
+            required: true
+      - name: date
+        label: Дата публикации (необязательно)
+        type: date
+      - name: showReadingTime
+        label: Показывать время чтения
+        type: boolean
+        default: false
+      - name: showToc
+        label: Показывать оглавление
+        type: boolean
+        default: false
+      - name: nextPage
+        label: ID следующей статьи (например ru/about/bio)
+        type: string

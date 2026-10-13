@@ -1,0 +1,23 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Menu from '../components/Menu.astro';
+import Article from '../components/Article.astro';
+import site from '../data/site.json';
+import { localeOf, publishedPages } from '../lib/navigation.js';
+
+export async function getStaticPaths() {
+  const pages = publishedPages(await getCollection('pages'));
+  return pages.filter((page) => page.id !== 'ru').map((page) => ({
+    params: { path: page.id.replace(/^ru\//, '') },
+    props: { page, pages },
+  }));
+}
+
+const { page, pages } = Astro.props;
+const language = localeOf(page.id);
+---
+
+<Base title={`${page.data.title} — ${language === 'ru' ? site.name : site.nameEn}`} description={page.data.intro} pageId={page.id} language={language}>
+  {page.data.kind === 'section' ? <Menu page={page} pages={pages} /> : <Article page={page} pages={pages} />}
+</Base>

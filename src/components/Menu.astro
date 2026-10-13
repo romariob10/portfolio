@@ -1,0 +1,52 @@
+---
+import site from '../data/site.json';
+import { menuMotion, railMotion } from '../lib/motion.js';
+import { childrenOf, localeOf, pageUrl, parentId, translatedId } from '../lib/navigation.js';
+
+const { page, pages } = Astro.props;
+const language = localeOf(page.id);
+const isRoot = page.id === language;
+const children = childrenOf(pages, page.id);
+const translation = pages.find((item) => item.id === translatedId(page.id));
+const backUrl = pageUrl(parentId(page.id));
+---
+
+<main id="content" class:list={['menu-screen', { 'is-root': isRoot }]} tabindex="-1">
+  <header class="rail" transition:name="rail" transition:animate={railMotion}>
+    <h1 class="rail-title">
+      <span>{isRoot ? (language === 'ru' ? site.name : site.nameEn) : page.data.title}</span>
+    </h1>
+    {!isRoot && (
+      <a class="back-link" href={backUrl} data-back aria-label={language === 'ru' ? 'Назад к разделу' : 'Back to section'}>
+        <img src="/icons/back.svg" width="90" height="90" alt="" />
+      </a>
+    )}
+  </header>
+
+  <div class="menu-content" transition:name="menu" transition:animate={menuMotion}>
+    <nav class="menu" aria-label={language === 'ru' ? 'Пункты раздела' : 'Section pages'}>
+      {children.length > 0 ? (
+        <ul>
+          {children.map((child) => (
+            <li>
+              <a class="menu-link" href={pageUrl(child.id)} data-menu-link data-preview={[child.data.intro, child.body?.trim()].filter(Boolean).join('\n\n')}>
+                <span>{child.data.title}</span>
+                <span class="selection-arrow" aria-hidden="true"><img src="/icons/selected.svg" width="55" height="36.8198" alt="" /></span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="empty-state">{language === 'ru' ? 'работы скоро появятся здесь' : 'work will appear here soon'}</p>
+      )}
+    </nav>
+  </div>
+
+  {!isRoot && <aside class="preview" aria-hidden="true"><p data-preview-text></p></aside>}
+
+  <nav class="language-switch" aria-label={language === 'ru' ? 'Язык сайта' : 'Site language'}>
+    <a href={language === 'ru' ? pageUrl(page.id) : pageUrl(translation?.id || 'ru')} lang="ru" aria-current={language === 'ru' ? 'page' : undefined}>ru</a>
+    <span aria-hidden="true">/</span>
+    <a href={language === 'en' ? pageUrl(page.id) : pageUrl(translation?.id || 'en')} lang="en" aria-current={language === 'en' ? 'page' : undefined}>en</a>
+  </nav>
+</main>

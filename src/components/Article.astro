@@ -1,0 +1,75 @@
+---
+import site from '../data/site.json';
+import { render } from 'astro:content';
+import { fadeMotion } from '../lib/motion.js';
+import { videoEmbedUrl } from '../lib/video.js';
+import { ancestorsOf, localeOf, pageUrl, parentId, translatedId } from '../lib/navigation.js';
+
+const { page, pages } = Astro.props;
+const language = localeOf(page.id);
+const { Content, headings } = await render(page);
+const ancestors = ancestorsOf(pages, page.id).slice(1);
+const nextPage = pages.find((item) => item.id === page.data.nextPage && localeOf(item.id) === language);
+const translation = pages.find((item) => item.id === translatedId(page.id));
+const minutes = Math.max(1, Math.ceil((page.body || '').split(/\s+/).length / 200));
+const backUrl = pageUrl(parentId(page.id));
+const links = page.id.endsWith('/contacts')
+  ? (site.telegram.startsWith('https://t.me/') ? [{ label: `@${site.telegram.split('/').at(-1)}`, url: site.telegram }] : [])
+  : page.data.links;
+---
+
+<header class="article-topbar" transition:name="article-bar" transition:animate={fadeMotion}>
+  <a href={backUrl} class="text-back" data-back>{language === 'ru' ? '← назад' : '← back'}</a>
+  <nav class="breadcrumbs" aria-label={language === 'ru' ? 'Путь к статье' : 'Breadcrumbs'}>
+    {ancestors.map((ancestor) => <><a href={pageUrl(ancestor.id)}>{ancestor.data.title}</a><span aria-hidden="true"> / </span></>)}
+    <span aria-current="page">{page.data.title}</span>
+  </nav>
+</header>
+
+<main id="content" class="article-page" tabindex="-1" transition:name="article" transition:animate={fadeMotion}>
+  <article>
+    <header>
+      {ancestors.length > 0 && <p class="article-kicker">{ancestors.at(-1).data.title} / {language === 'ru' ? 'портфолио' : 'portfolio'}</p>}
+      <h1 class="article-title">{page.data.title}</h1>
+      {page.data.intro && <p class="article-intro">{page.data.intro}</p>}
+      {(page.data.date || page.data.showReadingTime) && (
+        <p class="article-meta">
+          {page.data.date && <time datetime={page.data.date.toISOString()}>{page.data.date.toLocaleDateString(language === 'ru' ? 'ru-RU' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</time>}
+          {page.data.showReadingTime && <span>{minutes} {language === 'ru' ? 'мин чтения' : 'min read'}</span>}
+        </p>
+      )}
+    </header>
+
+    {page.data.showToc && headings.length > 0 && (
+      <nav class="article-toc" aria-label={language === 'ru' ? 'Оглавление' : 'Contents'}>
+        {headings.filter((heading) => heading.depth <= 3).map((heading) => <a href={`#${heading.slug}`}>{heading.text}</a>)}
+      </nav>
+    )}
+
+    <div class="article-body"><Content /></div>
+
+    {page.data.gallery.length > 0 && (
+      <div class="article-gallery">
+        {page.data.gallery.map((item) => (
+          <figure><img src={item.image} alt={item.alt} loading="lazy" />{item.caption && <figcaption>{item.caption}</figcaption>}</figure>
+        ))}
+      </div>
+    )}
+
+    {page.data.video && <video class="article-video" src={page.data.video} controls preload="metadata" playsinline aria-label={page.data.title} />}
+    {page.data.embed && <iframe class="article-embed" src={videoEmbedUrl(page.data.embed)} title={page.data.title} loading="lazy" allow="fullscreen; picture-in-picture; encrypted-media" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" />}
+    {page.data.code && <pre class="article-code"><code>{page.data.code}</code></pre>}
+
+    {links.length > 0 && <nav class="article-links" aria-label={language === 'ru' ? 'Ссылки' : 'Links'}>{links.map((link) => <a href={link.url} rel="noopener noreferrer">{link.label}</a>)}</nav>}
+
+    {nextPage && <a class="next-article" href={pageUrl(nextPage.id)}>{language === 'ru' ? 'дальше' : 'next'} / {nextPage.data.title}</a>}
+  </article>
+
+  <footer class="article-footer">
+    <span>{language === 'ru' ? site.name : site.nameEn} / {language === 'ru' ? 'портфолио' : 'portfolio'}</span>
+    <nav aria-label={language === 'ru' ? 'Навигация статьи' : 'Article navigation'}>
+      <a href={pageUrl(translation?.id || (language === 'ru' ? 'en' : 'ru'))} lang={language === 'ru' ? 'en' : 'ru'}>{language === 'ru' ? 'en' : 'ru'}</a>
+      <a href={backUrl} data-back>{language === 'ru' ? '← вернуться к разделу' : '← return to section'}</a>
+    </nav>
+  </footer>
+</main>

@@ -1,0 +1,25 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import '@fontsource-variable/geologica';
+import '../styles/global.css';
+const { title, description = '', pageId = 'ru', language = 'ru' } = Astro.props;
+---
+
+<!doctype html>
+<html lang={language} transition:animate="none">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <link rel="icon" href="data:," />
+    <title>{title}</title>
+    <ClientRouter fallback="none" />
+  </head>
+  <body data-page-id={pageId}>
+    <a class="skip-link" href="#content">{language === 'ru' ? 'К содержимому' : 'Skip to content'}</a>
+    <slot />
+    <script>
+      import '../scripts/menu.js';
+    </script>
+  </body>
+</html>
