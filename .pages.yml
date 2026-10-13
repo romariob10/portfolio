@@ -116,6 +116,7 @@ content:
       - name: date
         label: Дата публикации (необязательно)
         type: date
+        default: ""
       - name: showReadingTime
         label: Показывать время чтения
         type: boolean

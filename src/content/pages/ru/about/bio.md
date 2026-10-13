@@ -7,7 +7,6 @@ intro: Я занимаюсь разработкой сайтов, цифровы
   интересно.
 order: 1
 draft: false
-date: 2026-10-13
 showReadingTime: false
 showToc: false
 ---
