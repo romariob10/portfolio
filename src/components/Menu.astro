@@ -11,7 +11,7 @@ const translation = pages.find((item) => item.id === translatedId(page.id));
 const backUrl = pageUrl(parentId(page.id));
 ---
 
-<main id="content" class:list={['menu-screen', { 'is-root': isRoot }]} tabindex="-1">
+<main id="content" class:list={['menu-screen', { 'is-root': isRoot }]} tabindex="-1" transition:name="menu" transition:animate={menuMotion}>
   <header class="rail" transition:name="rail" transition:animate={railMotion}>
     <h1 class="rail-title">
       <span>{isRoot ? (language === 'ru' ? site.name : site.nameEn) : page.data.title}</span>
@@ -23,7 +23,7 @@ const backUrl = pageUrl(parentId(page.id));
     )}
   </header>
 
-  <div class="menu-content" transition:name="menu" transition:animate={menuMotion}>
+  <div class="menu-content">
     <nav class="menu" aria-label={language === 'ru' ? 'Пункты раздела' : 'Section pages'}>
       {children.length > 0 ? (
         <ul>
@@ -42,9 +42,9 @@ const backUrl = pageUrl(parentId(page.id));
     </nav>
   </div>
 
-  {!isRoot && <aside class="preview" aria-hidden="true"><p data-preview-text></p></aside>}
+  {!isRoot && <aside class="preview" aria-hidden="true" transition:name="preview" transition:animate="none"><p data-preview-text></p></aside>}
 
-  <nav class="language-switch" aria-label={language === 'ru' ? 'Язык сайта' : 'Site language'}>
+  <nav class="language-switch" aria-label={language === 'ru' ? 'Язык сайта' : 'Site language'} transition:name="language" transition:animate="none">
     <a href={language === 'ru' ? pageUrl(page.id) : pageUrl(translation?.id || 'ru')} lang="ru" aria-current={language === 'ru' ? 'page' : undefined}>ru</a>
     <span aria-hidden="true">/</span>
     <a href={language === 'en' ? pageUrl(page.id) : pageUrl(translation?.id || 'en')} lang="en" aria-current={language === 'en' ? 'page' : undefined}>en</a>

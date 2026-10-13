@@ -176,7 +176,6 @@ main:focus {
   display: block;
   flex-shrink: 0;
   opacity: 0;
-  transition: opacity 150ms ease;
 }
 
 .selection-arrow img {
@@ -193,13 +192,21 @@ main:focus {
   outline: none;
 }
 
-.menu-link:focus-visible .selection-arrow {
+.menu-link.is-selected .selection-arrow {
+  opacity: 1;
+}
+
+/* Without JS, hover takes priority over keyboard focus. */
+.menu:not([data-selection-ready]) .menu-link:focus-visible .selection-arrow {
   opacity: 1;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .menu-link:hover .selection-arrow {
+  .menu:not([data-selection-ready]) .menu-link:hover .selection-arrow {
     opacity: 1;
+  }
+  .menu:not([data-selection-ready]):has(.menu-link:hover) .menu-link:focus-visible:not(:hover) .selection-arrow {
+    opacity: 0;
   }
 }
 
@@ -498,37 +505,55 @@ figcaption {
   color: var(--text);
 }
 
-/* Menu lists turn out above the viewport and enter from below, as in the video. */
+/* A full-screen snapshot keeps both rotation pivots at the viewport corners.
+   Separately named rail, preview and language elements do not turn with it. */
 @keyframes menu-out-up {
   to {
     opacity: 0;
-    transform: translateY(-42vh) rotate(-30deg);
+    transform: rotate(-90deg);
   }
 }
 
 @keyframes menu-in-up {
   from {
     opacity: 0;
-    transform: translateY(42vh) rotate(30deg);
+    transform: rotate(90deg);
   }
 }
 
 @keyframes menu-out-down {
   to {
     opacity: 0;
-    transform: translateY(42vh) rotate(30deg);
+    transform: rotate(90deg);
   }
 }
 
 @keyframes menu-in-down {
   from {
     opacity: 0;
-    transform: translateY(-42vh) rotate(-30deg);
+    transform: rotate(-90deg);
   }
 }
 
-::view-transition-old(menu), ::view-transition-new(menu) {
-  transform-origin: left center;
+::view-transition-old(menu) {
+  transform-origin: left top;
+}
+
+::view-transition-new(menu) {
+  transform-origin: 0 100svh;
+}
+
+::view-transition-group(menu) {
+  animation: none;
+  z-index: 1;
+}
+
+::view-transition-group(root) {
+  z-index: 0;
+}
+
+::view-transition-group(rail), ::view-transition-group(preview), ::view-transition-group(language) {
+  z-index: 2;
 }
 
 ::view-transition-group(*) {
